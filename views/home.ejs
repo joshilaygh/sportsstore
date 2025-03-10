@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Store - Home</title>
+    <link rel="stylesheet" href="/css/style.css">
+      <!-- Toastr CSS -->
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-links a {
+            padding: 10px 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: white;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #f1f1f1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        .menu-section {
+            background-color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .sports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .sports-item {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .sports-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .sports-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .sports-item h3 {
+            color: #007bff;
+            margin: 15px 0;
+        }
+
+        .sports-item .price {
+            font-size: 1.2rem;
+            color: #0056b3;
+            font-weight: 700;
+        }
+
+        .sports-item .add-to-cart {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .sports-item .add-to-cart:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nav-bar">
+        <a href="/" class="nav-logo">Sports Shop</a>
+        <div class="nav-links">
+            <a href="#best-sports-items">Shop</a>
+            <% if (user) { %>
+                <a href="my-basket">My Basket</a>
+                <a href="/logout">Logout</a>
+            <% } else { %>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            <% } %>
+        </div>
+    </div>
+
+    <% if (errorMessage && errorMessage.length> 0) { %>
+        <script>
+            toastr.error("<%= errorMessage[0] %>"); 
+        </script>
+        <% } %>
+
+            <% if (successMessage && successMessage.length> 0) { %>
+                <script>
+                    toastr.success("<%= successMessage[0] %>"); 
+                </script>
+                <% } %>
+
+    <div class="container">
+        <h1>Welcome to Sports Shop</h1>
+        <p>Your one-stop destination for premium sports gear and equipment.</p>
+        <img src="images/sports.jpg" alt="Sports items">
+    </div>
+
+    <div id="best-sports-items" class="menu-section">
+        <h2>Best Sports Items</h2>
+        <div class="sports-grid">
+            <% items.forEach((item) => { %>
+                <div class="sports-item">
+                    <img src="<%= item.image_url %>" alt="<%= item.name %>">
+                    <h3><%= item.name %></h3>
+                    <p><%= item.description %></p>
+                    <div class="price">$<%= item.price %></div>
+                    <% 
+                    const isInBasket = basketedItems.has(item.id); %>
+                    <% if (!isInBasket) { %>
+                        <!-- User is logged in, show Add to Basket form -->
+                        <form action="/add-to-basket" method="POST">
+                            <input type="hidden" name="itemId" value="<%= item.id %>">
+                            <button type="submit" class="add-to-cart">Add to Basket</button>
+                        </form>
+                    <% } else { %>
+                        <!-- User is not logged in, show Remove from Basket button -->
+                        <form action="/remove-from-basket" method="POST">
+                            <input type="hidden" name="itemId" value="<%= item.id %>">
+                            <button type="submit" class="add-to-cart">Remove from Basket</button>
+                        </form>
+                    <% } %>
+                    
+
+
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</body>
+
+</html>
